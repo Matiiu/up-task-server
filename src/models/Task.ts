@@ -14,7 +14,7 @@ type TaskStatus = (typeof taskStatus)[keyof typeof taskStatus];
 type TTask = Document & {
 	name: string;
 	description: string;
-	projectId: Types.ObjectId;
+	project: Types.ObjectId;
 	status: TaskStatus;
 };
 
@@ -31,11 +31,10 @@ const TaskSchema: Schema = new Schema(
 			require: true,
 			trim: true,
 		},
-		projectId: {
+		project: {
 			type: Types.ObjectId,
 			ref: 'Project',
 			require: true,
-			trim: true,
 		},
 		status: {
 			type: String,
@@ -43,7 +42,7 @@ const TaskSchema: Schema = new Schema(
 			default: taskStatus.PENDING,
 		},
 	},
-	{ timestamps: true }
+	{ timestamps: true },
 );
 
 const Task = mongoose.model<TTask>('Task', TaskSchema);

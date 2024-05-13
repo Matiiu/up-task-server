@@ -1,6 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
+import { Types } from 'mongoose';
+
 import { objErrors } from '../helpers';
 import Project, { TProject } from '../models/Project';
+import { ProjectErrorMsg } from '../data/ErrorMessages';
 
 declare global {
 	namespace Express {
@@ -13,10 +16,19 @@ declare global {
 const validateProjectExists = async (
 	req: Request,
 	res: Response,
-	next: NextFunction
+	next: NextFunction,
 ) => {
 	try {
 		const { projectId } = req.params;
+
+		if (!Types.ObjectId.isValid(projectId)) {
+			return res.status(400).json(
+				objErrors({
+					value: projectId,
+					msg: ProjectErrorMsg.IsNotMongoId,
+				}),
+			);
+		}
 		const project = await Project.findById(projectId);
 
 		if (!project) {
@@ -25,7 +37,13 @@ const validateProjectExists = async (
 		req.project = project;
 		next();
 	} catch (err) {
-		res.status(500).json(objErrors({ msg: 'Ocurrio un error' }));
+		console.log({ err: err.message });
+		res.status(500).json(
+			objErrors({
+				msg: 'Ocurrio un error',
+				value: req.params.projectId,
+			}),
+		);
 	}
 };
 

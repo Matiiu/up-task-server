@@ -1,14 +1,14 @@
-import { ProductErrorMsg } from '../data/ErrorMessages';
+import { ProjectErrorMsg } from '../data/ErrorMessages';
 
-type ObjErrors = {
+type TErrors = {
 	value?: string;
 	msg?: string;
 };
 
 export function objErrors({
 	value = '',
-	msg = ProductErrorMsg.ProductNotFound,
-}: ObjErrors) {
+	msg = ProjectErrorMsg.ProductNotFound,
+}: TErrors) {
 	return {
 		errors: [
 			{

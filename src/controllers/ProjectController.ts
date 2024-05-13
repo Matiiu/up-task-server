@@ -13,8 +13,8 @@ class ProjectController {
 		} catch (err) {
 			console.log(
 				colors.bgRed.bold(
-					`An error occurred while creating a new project:\n${err?.message}`
-				)
+					`An error occurred while creating a new project:\n${err?.message}`,
+				),
 			);
 		}
 	};
@@ -22,19 +22,23 @@ class ProjectController {
 	static getAllProjects = async (req: Request, res: Response) => {
 		try {
 			const projects = await Project.find({});
+
+			if (!projects.length) {
+				return res.status(204).json({});
+			}
 			res.json(projects);
 		} catch (err) {
 			console.log(
 				colors.bgRed.bold(
-					`An error occurred while getting all projects:\n${err?.message}`
-				)
+					`An error occurred while getting all projects:\n${err?.message}`,
+				),
 			);
 		}
 	};
 
 	static getProjectById = async (req: Request, res: Response) => {
 		try {
-			const project = await Project.findById(req.params.id);
+			const project = await Project.findById(req.params.id).populate('tasks');
 
 			if (!project) {
 				return res.status(404).json(objErrors({ value: req.params.id }));
@@ -43,8 +47,8 @@ class ProjectController {
 		} catch (err) {
 			console.log(
 				colors.bgRed.bold(
-					`An error occurred while getting a project by its ID:\n${err?.message}`
-				)
+					`An error occurred while getting a project by its ID:\n${err?.message}`,
+				),
 			);
 		}
 	};
@@ -61,8 +65,8 @@ class ProjectController {
 		} catch (err) {
 			console.log(
 				colors.bgRed.bold(
-					`An error occurred while updating a project by its ID:\n${err?.message}`
-				)
+					`An error occurred while updating a project by its ID:\n${err?.message}`,
+				),
 			);
 		}
 	};
@@ -78,8 +82,8 @@ class ProjectController {
 		} catch (err) {
 			console.log(
 				colors.bgRed.bold(
-					`An error occurred while deleting a project by its ID:\n${err?.message}`
-				)
+					`An error occurred while deleting a project by its ID:\n${err?.message}`,
+				),
 			);
 		}
 	};

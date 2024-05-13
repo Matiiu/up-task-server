@@ -6,7 +6,7 @@ type TProject = Document & {
 	projectName: string;
 	clientName: string;
 	description: string;
-	taskIds: PopulatedDoc<TTask & Document>[];
+	tasks: PopulatedDoc<TTask & Document>[];
 };
 
 // Mongoose Types
@@ -27,14 +27,14 @@ const ProjectSchema: Schema = new Schema(
 			require: true,
 			trim: true,
 		},
-		taskIds: [
+		tasks: [
 			{
 				type: Types.ObjectId,
 				ref: 'Task',
 			},
 		],
 	},
-	{ timestamps: true }
+	{ timestamps: true },
 );
 
 const Project = mongoose.model<TProject>('Project', ProjectSchema);

@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { body, param } from 'express-validator';
 import ProjectController from '../controllers/ProjectController';
-import { ProductErrorMsg } from '../data/ErrorMessages';
+import { ProjectErrorMsg, TaskErrorMsg } from '../data/ErrorMessages';
 import handleInputErrors from '../middleware/validation';
 import TaskController from '../controllers/TaskController';
 import validateProjectExists from '../middleware/project';
@@ -12,50 +12,65 @@ router.post(
 	'/',
 	body('projectName')
 		.notEmpty()
-		.withMessage(ProductErrorMsg.MissingProjectName),
-	body('clientName').notEmpty().withMessage(ProductErrorMsg.MissingClientName),
+		.withMessage(ProjectErrorMsg.MissingProjectName),
+	body('clientName').notEmpty().withMessage(ProjectErrorMsg.MissingClientName),
 	body('description')
 		.notEmpty()
-		.withMessage(ProductErrorMsg.MissingDescription),
+		.withMessage(ProjectErrorMsg.MissingDescription),
 	handleInputErrors,
-	ProjectController.createProject
+	ProjectController.createProject,
 );
 
 router.get('/', ProjectController.getAllProjects);
 
 router.get(
 	'/:id',
-	param('id').isMongoId().withMessage(ProductErrorMsg.IsNotMongoId),
+	param('id').isMongoId().withMessage(ProjectErrorMsg.IsNotMongoId),
 	handleInputErrors,
-	ProjectController.getProjectById
+	ProjectController.getProjectById,
 );
 
 router.put(
 	'/:id',
-	param('id').isMongoId().withMessage(ProductErrorMsg.IsNotMongoId),
+	param('id').isMongoId().withMessage(ProjectErrorMsg.IsNotMongoId),
 	body('projectName')
 		.notEmpty()
-		.withMessage(ProductErrorMsg.MissingProjectName),
-	body('clientName').notEmpty().withMessage(ProductErrorMsg.MissingClientName),
+		.withMessage(ProjectErrorMsg.MissingProjectName),
+	body('clientName').notEmpty().withMessage(ProjectErrorMsg.MissingClientName),
 	body('description')
 		.notEmpty()
-		.withMessage(ProductErrorMsg.MissingDescription),
+		.withMessage(ProjectErrorMsg.MissingDescription),
 	handleInputErrors,
-	ProjectController.updateProject
+	ProjectController.updateProject,
 );
 
 router.delete(
 	'/:id',
-	param('id').isMongoId().withMessage(ProductErrorMsg.IsNotMongoId),
+	param('id').isMongoId().withMessage(ProjectErrorMsg.IsNotMongoId),
 	handleInputErrors,
-	ProjectController.deleteProject
+	ProjectController.deleteProject,
 );
 
 // Routes for tasks
+
+// Add validateProjectExists function to all routes that include the param projectId
+router.param('projectId', validateProjectExists);
+
 router.post(
 	'/:projectId/tasks',
-	validateProjectExists,
-	TaskController.createTask
+	body('name').notEmpty().withMessage(TaskErrorMsg.MissingTaskName),
+	body('description').notEmpty().withMessage(TaskErrorMsg.MissingDescription),
+	handleInputErrors,
+	TaskController.createTask,
+);
+
+router.get('/:projectId/tasks', TaskController.getProjectTasks);
+
+router.get(
+	'/:projectId/tasks/:taskId',
+	param('taskId').isMongoId().withMessage(TaskErrorMsg.IsNotMongoId),
+	handleInputErrors,
+	TaskController.getTaskById,
 );
 
 export default router;

@@ -9,8 +9,8 @@ export const connectDB = async () => {
 	} catch (err) {
 		console.log(
 			colors.bgRed.bold(
-				`An error occurred while connecting to the database:\n${err?.message}`
-			)
+				`An error occurred while connecting to the database:\n${err?.message}`,
+			),
 		);
 		process.exit(1);
 	}
