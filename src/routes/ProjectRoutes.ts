@@ -4,8 +4,12 @@ import ProjectController from '../controllers/ProjectController';
 import { ProjectErrorMsg, TaskErrorMsg } from '../data/MessagesAPI';
 import handleInputErrors from '../middleware/validation';
 import TaskController from '../controllers/TaskController';
-import validateProjectExists from '../middleware/project';
-import validateTaskExists from '../middleware/task';
+import { productNotFound, validateProjectExists } from '../middleware/project';
+import {
+	validateTaskExists,
+	taskBelongsToProject,
+	validTaskStatus,
+} from '../middleware/task';
 
 const router: Router = Router();
 
@@ -24,16 +28,12 @@ router.post(
 
 router.get('/', ProjectController.getAllProjects);
 
-router.get(
-	'/:id',
-	param('id').isMongoId().withMessage(ProjectErrorMsg.IsNotMongoId),
-	handleInputErrors,
-	ProjectController.getProjectById,
-);
+router.param('id', productNotFound);
+
+router.get('/:id', ProjectController.getProjectById);
 
 router.put(
 	'/:id',
-	param('id').isMongoId().withMessage(ProjectErrorMsg.IsNotMongoId),
 	body('projectName')
 		.notEmpty()
 		.withMessage(ProjectErrorMsg.MissingProjectName),
@@ -45,12 +45,7 @@ router.put(
 	ProjectController.updateProject,
 );
 
-router.delete(
-	'/:id',
-	param('id').isMongoId().withMessage(ProjectErrorMsg.IsNotMongoId),
-	handleInputErrors,
-	ProjectController.deleteProject,
-);
+router.delete('/:id', ProjectController.deleteProject);
 
 // Routes for tasks
 
@@ -69,6 +64,7 @@ router.get('/:projectId/tasks', TaskController.getProjectTasks);
 
 // Validate if the task exists in the project
 router.param('taskId', validateTaskExists);
+router.param('taskId', taskBelongsToProject);
 
 router.get('/:projectId/tasks/:taskId', TaskController.getTaskById);
 
@@ -86,6 +82,7 @@ router.post(
 	'/:projectId/tasks/:taskId/status',
 	body('status').notEmpty().withMessage(TaskErrorMsg.MandatoryStatus),
 	handleInputErrors,
+	validTaskStatus,
 	TaskController.updateStatus,
 );
 

@@ -48,14 +48,6 @@ class TaskController {
 
 	static getTaskById = async (req: Request, res: Response) => {
 		try {
-			if (req.task.project.toString() !== req.project.id) {
-				return res.status(400).json(
-					objErrors({
-						value: req.task.id,
-						msg: TaskErrorMsg.NotBelongToTheProduct,
-					}),
-				);
-			}
 			res.json(req.task);
 		} catch (err) {
 			console.log(
@@ -68,15 +60,6 @@ class TaskController {
 
 	static updateTask = async (req: Request, res: Response) => {
 		try {
-			if (req.task.project.toString() !== req.project.id) {
-				return res.status(400).json(
-					objErrors({
-						value: req.task.id,
-						msg: TaskErrorMsg.NotBelongToTheProduct,
-					}),
-				);
-			}
-
 			req.task.name = req.body.name;
 			req.task.description = req.body.description;
 			await req.task.save();
@@ -93,15 +76,6 @@ class TaskController {
 	static deleteTask = async (req: Request, res: Response) => {
 		try {
 			const { task, project } = req;
-
-			if (task.project.toString() !== project.id) {
-				return res.status(400).json(
-					objErrors({
-						value: task.id,
-						msg: TaskErrorMsg.NotBelongToTheProduct,
-					}),
-				);
-			}
 
 			// Delete task from project
 			project.tasks = project.tasks.filter(
@@ -121,23 +95,8 @@ class TaskController {
 
 	static updateStatus = async (req: Request, res: Response) => {
 		try {
-			const {
-				task,
-				project,
-				body: { status },
-			} = req;
-
-			if (task.project.toString() !== project.id) {
-				return res.status(400).json(
-					objErrors({
-						value: task.id,
-						msg: TaskErrorMsg.NotBelongToTheProduct,
-					}),
-				);
-			}
-
-			task.status = status;
-			await task.save();
+			req.task.status = req.body.status;
+			await req.task.save();
 			res.send(TaskSuccessMsg.UpdatedTask);
 		} catch (err) {
 			console.log(

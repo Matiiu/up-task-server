@@ -1,3 +1,5 @@
+import { taskStatus } from '../models/Task';
+
 export enum ProjectErrorMsg {
 	MissingProjectName = 'El nombre del proyecto es obligatorio',
 	MissingClientName = 'El nombre del cliente es obligatorio',
@@ -11,8 +13,9 @@ export enum TaskErrorMsg {
 	MissingDescription = 'La descripción de la tarea es obligatoria',
 	IsNotMongoId = 'ID de tarea no válido',
 	TaskNotFound = 'Tarea no encontrada',
-	NotBelongToTheProduct = 'La tarea no pertenece al producto',
+	NotBelongToTheProject = 'La tarea no pertenece al producto',
 	MandatoryStatus = 'El estado es obligatorio',
+	InvalidStatus = 'Estado no valido',
 }
 
 export enum TaskSuccessMsg {

@@ -21,7 +21,7 @@ class ProjectController {
 
 	static getAllProjects = async (req: Request, res: Response) => {
 		try {
-			const projects = await Project.find({});
+			const projects = await Project.find({}).populate('tasks');
 
 			if (!projects.length) {
 				return res.status(204).json({});
@@ -38,12 +38,7 @@ class ProjectController {
 
 	static getProjectById = async (req: Request, res: Response) => {
 		try {
-			const project = await Project.findById(req.params.id).populate('tasks');
-
-			if (!project) {
-				return res.status(404).json(objErrors({ value: req.params.id }));
-			}
-			res.json(project);
+			res.json(req.project);
 		} catch (err) {
 			console.log(
 				colors.bgRed.bold(
@@ -55,12 +50,11 @@ class ProjectController {
 
 	static updateProject = async (req: Request, res: Response) => {
 		try {
-			const project = await Project.findByIdAndUpdate(req.params.id, req.body);
+			req.project.projectName = req.body.projectName;
+			req.project.clientName = req.body.clientName;
+			req.project.description = req.body.description;
 
-			if (!project) {
-				return res.status(404).json(objErrors({ value: req.params.id }));
-			}
-			await project.save();
+			await req.project.save();
 			res.send('Proyecto Actualizado');
 		} catch (err) {
 			console.log(
@@ -73,14 +67,7 @@ class ProjectController {
 
 	static deleteProject = async (req: Request, res: Response) => {
 		try {
-			const { id } = req.params;
-			const project = await Project.findById(id);
-
-			if (!project) {
-				return res.status(404).json(objErrors({ value: id }));
-			}
-
-			await project.deleteOne();
+			await req.project.deleteOne();
 			res.send('Proyecto Eliminado');
 		} catch (err) {
 			console.log(
