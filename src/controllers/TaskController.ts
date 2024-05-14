@@ -1,9 +1,9 @@
-import { Request, Response } from 'express';
+import { request, Request, Response } from 'express';
 import colors from 'colors';
 
 import Task from '../models/Task';
 import { objErrors } from '../helpers';
-import { TaskErrorMsg } from '../data/ErrorMessages';
+import { TaskErrorMsg, TaskSuccessMsg } from '../data/MessagesAPI';
 
 class TaskController {
 	static createTask = async (req: Request, res: Response) => {
@@ -48,30 +48,101 @@ class TaskController {
 
 	static getTaskById = async (req: Request, res: Response) => {
 		try {
-			console.log(req.params.taskId);
-			const task = await Task.findById(req.params.taskId);
-
-			if (task.project.toString() !== req.project.id) {
+			if (req.task.project.toString() !== req.project.id) {
 				return res.status(400).json(
 					objErrors({
-						value: req.params.taskId,
+						value: req.task.id,
 						msg: TaskErrorMsg.NotBelongToTheProduct,
 					}),
 				);
 			}
-			if (!task) {
-				return res.status(404).json(
-					objErrors({
-						value: req.params.taskId,
-						msg: TaskErrorMsg.TaskNotFound,
-					}),
-				);
-			}
-			res.json(task);
+			res.json(req.task);
 		} catch (err) {
 			console.log(
 				colors.bgRed.bold(
 					`An error occurred while deleting a task:\n${err?.message}`,
+				),
+			);
+		}
+	};
+
+	static updateTask = async (req: Request, res: Response) => {
+		try {
+			if (req.task.project.toString() !== req.project.id) {
+				return res.status(400).json(
+					objErrors({
+						value: req.task.id,
+						msg: TaskErrorMsg.NotBelongToTheProduct,
+					}),
+				);
+			}
+
+			req.task.name = req.body.name;
+			req.task.description = req.body.description;
+			await req.task.save();
+			res.send(TaskSuccessMsg.UpdatedTask);
+		} catch (err) {
+			console.log(
+				colors.bgRed.bold(
+					`An error occurred while deleting a task:\n${err?.message}`,
+				),
+			);
+		}
+	};
+
+	static deleteTask = async (req: Request, res: Response) => {
+		try {
+			const { task, project } = req;
+
+			if (task.project.toString() !== project.id) {
+				return res.status(400).json(
+					objErrors({
+						value: task.id,
+						msg: TaskErrorMsg.NotBelongToTheProduct,
+					}),
+				);
+			}
+
+			// Delete task from project
+			project.tasks = project.tasks.filter(
+				(task) => task.toString() !== task.id.toString(),
+			);
+
+			await Promise.allSettled([task.deleteOne(), project.save()]);
+			res.send(TaskSuccessMsg.UpdatedTask);
+		} catch (err) {
+			console.log(
+				colors.bgRed.bold(
+					`An error occurred while deleting a task:\n${err?.message}`,
+				),
+			);
+		}
+	};
+
+	static updateStatus = async (req: Request, res: Response) => {
+		try {
+			const {
+				task,
+				project,
+				body: { status },
+			} = req;
+
+			if (task.project.toString() !== project.id) {
+				return res.status(400).json(
+					objErrors({
+						value: task.id,
+						msg: TaskErrorMsg.NotBelongToTheProduct,
+					}),
+				);
+			}
+
+			task.status = status;
+			await task.save();
+			res.send(TaskSuccessMsg.UpdatedTask);
+		} catch (err) {
+			console.log(
+				colors.bgRed.bold(
+					`An error occurred while updating a status task:\n${err?.message}`,
 				),
 			);
 		}

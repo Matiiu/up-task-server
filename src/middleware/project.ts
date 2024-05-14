@@ -3,7 +3,7 @@ import { Types } from 'mongoose';
 
 import { objErrors } from '../helpers';
 import Project, { TProject } from '../models/Project';
-import { ProjectErrorMsg } from '../data/ErrorMessages';
+import { ProjectErrorMsg } from '../data/MessagesAPI';
 
 declare global {
 	namespace Express {

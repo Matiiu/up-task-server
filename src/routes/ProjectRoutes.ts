@@ -1,10 +1,11 @@
 import { Router } from 'express';
 import { body, param } from 'express-validator';
 import ProjectController from '../controllers/ProjectController';
-import { ProjectErrorMsg, TaskErrorMsg } from '../data/ErrorMessages';
+import { ProjectErrorMsg, TaskErrorMsg } from '../data/MessagesAPI';
 import handleInputErrors from '../middleware/validation';
 import TaskController from '../controllers/TaskController';
 import validateProjectExists from '../middleware/project';
+import validateTaskExists from '../middleware/task';
 
 const router: Router = Router();
 
@@ -66,11 +67,26 @@ router.post(
 
 router.get('/:projectId/tasks', TaskController.getProjectTasks);
 
-router.get(
+// Validate if the task exists in the project
+router.param('taskId', validateTaskExists);
+
+router.get('/:projectId/tasks/:taskId', TaskController.getTaskById);
+
+router.put(
 	'/:projectId/tasks/:taskId',
-	param('taskId').isMongoId().withMessage(TaskErrorMsg.IsNotMongoId),
+	body('name').notEmpty().withMessage(TaskErrorMsg.MissingTaskName),
+	body('description').notEmpty().withMessage(TaskErrorMsg.MissingDescription),
 	handleInputErrors,
-	TaskController.getTaskById,
+	TaskController.updateTask,
+);
+
+router.delete('/:projectId/tasks/:taskId', TaskController.deleteTask);
+
+router.post(
+	'/:projectId/tasks/:taskId/status',
+	body('status').notEmpty().withMessage(TaskErrorMsg.MandatoryStatus),
+	handleInputErrors,
+	TaskController.updateStatus,
 );
 
 export default router;

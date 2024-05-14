@@ -12,4 +12,10 @@ export enum TaskErrorMsg {
 	IsNotMongoId = 'ID de tarea no válido',
 	TaskNotFound = 'Tarea no encontrada',
 	NotBelongToTheProduct = 'La tarea no pertenece al producto',
+	MandatoryStatus = 'El estado es obligatorio',
+}
+
+export enum TaskSuccessMsg {
+	UpdatedTask = 'Tarea actualizada con éxito',
+	DeletedTask = 'Tare eliminada con éxito',
 }
