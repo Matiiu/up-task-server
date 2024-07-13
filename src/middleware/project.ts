@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { Types } from 'mongoose';
 
-import { objErrors } from '../helpers';
+import { objErrors } from '../utils';
 import Project, { TProject } from '../models/Project';
 import { ProjectErrorMsg } from '../data/MessagesAPI';
 

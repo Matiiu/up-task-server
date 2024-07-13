@@ -1,12 +1,10 @@
 import { Request, Response } from 'express';
 import Project from '../models/Project';
 import colors from 'colors';
-import { objErrors } from '../helpers';
 
 class ProjectController {
 	static createProject = async (req: Request, res: Response) => {
 		const project = new Project(req.body);
-
 		try {
 			await project.save();
 			res.send(`Se creo el proyecto: ${project.projectName}`);
@@ -21,11 +19,9 @@ class ProjectController {
 
 	static getAllProjects = async (req: Request, res: Response) => {
 		try {
+			console.log('entro');
 			const projects = await Project.find({}).populate('tasks');
-
-			if (!projects.length) {
-				return res.status(204).json({});
-			}
+			console.log({ projects });
 			res.json(projects);
 		} catch (err) {
 			console.log(

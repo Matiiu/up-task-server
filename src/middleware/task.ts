@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { Types } from 'mongoose';
 
-import { objErrors } from '../helpers';
+import { objErrors } from '../utils';
 import Task, { taskStatus, TTask } from '../models/Task';
 import { TaskErrorMsg } from '../data/MessagesAPI';
 
@@ -43,7 +43,6 @@ export async function validateTaskExists(
 		req.task = task;
 		next();
 	} catch (err) {
-		console.log({ err: err.message });
 		res.status(500).json(
 			objErrors({
 				msg: 'Ocurrio un error',

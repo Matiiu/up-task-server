@@ -2,7 +2,7 @@ import { request, Request, Response } from 'express';
 import colors from 'colors';
 
 import Task from '../models/Task';
-import { objErrors } from '../helpers';
+import { objErrors } from '../utils';
 import { TaskErrorMsg, TaskSuccessMsg } from '../data/MessagesAPI';
 
 class TaskController {
@@ -32,10 +32,6 @@ class TaskController {
 			const tasks = await Task.find({ project: req.project.id }).populate(
 				'project',
 			);
-
-			if (!tasks.length) {
-				return res.status(204).json({});
-			}
 			res.json(tasks);
 		} catch (err) {
 			console.log(
