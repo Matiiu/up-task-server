@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { body, param } from 'express-validator';
+import { body } from 'express-validator';
 import ProjectController from '../controllers/ProjectController';
 import { ProjectErrorMsg, TaskErrorMsg } from '../data/MessagesAPI';
 import handleInputErrors from '../middleware/validation';
