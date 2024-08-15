@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { validationResult } from 'express-validator';
-import { objErrors } from '../utils/index';
+import { createErrorSchema } from '../utils/index';
 
 const handleInputErrors = (req: Request, res: Response, next: NextFunction) => {
 	const errors = validationResult(req);

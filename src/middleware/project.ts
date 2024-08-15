@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { Types } from 'mongoose';
 
-import { objErrors } from '../utils';
+import { createErrorSchema } from '../utils';
 import Project, { TProject } from '../models/Project';
 import { ProjectErrorMsg } from '../data/MessagesAPI';
 
@@ -23,7 +23,7 @@ export async function productNotFound(
 
 		if (!Types.ObjectId.isValid(id)) {
 			return res.status(400).json(
-				objErrors({
+				createErrorSchema({
 					value: id,
 					msg: ProjectErrorMsg.IsNotMongoId,
 				}),
@@ -32,13 +32,13 @@ export async function productNotFound(
 		const project = await Project.findById(req.params.id).populate('tasks');
 
 		if (!project) {
-			return res.status(404).json(objErrors({ value: req.params.id }));
+			return res.status(404).json(createErrorSchema({ value: req.params.id }));
 		}
 		req.project = project;
 		next();
 	} catch (err) {
 		res.status(500).json(
-			objErrors({
+			createErrorSchema({
 				msg: 'Ocurrio un error',
 				value: req.params.projectId,
 			}),
@@ -56,7 +56,7 @@ export async function validateProjectExists(
 
 		if (!Types.ObjectId.isValid(projectId)) {
 			return res.status(400).json(
-				objErrors({
+				createErrorSchema({
 					value: projectId,
 					msg: ProjectErrorMsg.IsNotMongoId,
 					path: 'projectId',
@@ -67,7 +67,7 @@ export async function validateProjectExists(
 
 		if (!project) {
 			return res.status(404).json(
-				objErrors({
+				createErrorSchema({
 					value: projectId,
 					path: 'projectId',
 				}),
@@ -77,7 +77,7 @@ export async function validateProjectExists(
 		next();
 	} catch (err) {
 		res.status(500).json(
-			objErrors({
+			createErrorSchema({
 				msg: 'Ocurrio un error',
 				value: req.params.projectId,
 			}),

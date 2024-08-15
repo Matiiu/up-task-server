@@ -1,6 +1,6 @@
 import { ProjectErrorMsg } from '../data/MessagesAPI';
 
-type TErrors = {
+type ErrorSchema = {
 	type?: string;
 	value?: string;
 	msg?: string;
@@ -8,13 +8,13 @@ type TErrors = {
 	location?: string;
 };
 
-export function objErrors({
+export function createErrorSchema({
 	type = 'field',
 	value = '',
-	msg = ProjectErrorMsg.ProductNotFound,
 	path = 'id',
 	location = 'params',
-}: TErrors) {
+	msg = '',
+}: ErrorSchema) {
 	return {
 		errors: [
 			{

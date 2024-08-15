@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { Types } from 'mongoose';
 
-import { objErrors } from '../utils';
+import { createErrorSchema } from '../utils';
 import Task, { taskStatus, TTask } from '../models/Task';
 import { TaskErrorMsg } from '../data/MessagesAPI';
 
@@ -23,17 +23,17 @@ export async function validateTaskExists(
 
 		if (!Types.ObjectId.isValid(taskId)) {
 			return res.status(400).json(
-				objErrors({
+				createErrorSchema({
 					value: taskId,
 					msg: TaskErrorMsg.IsNotMongoId,
 				}),
 			);
 		}
-		const task = await Task.findById(taskId).populate('project');
+		const task = await Task.findById(taskId);
 
 		if (!task) {
 			return res.status(404).json(
-				objErrors({
+				createErrorSchema({
 					msg: TaskErrorMsg.TaskNotFound,
 					value: taskId,
 					path: 'taskId',
@@ -44,7 +44,7 @@ export async function validateTaskExists(
 		next();
 	} catch (err) {
 		res.status(500).json(
-			objErrors({
+			createErrorSchema({
 				msg: 'Ocurrio un error',
 				value: req.params.taskId,
 			}),
@@ -57,9 +57,10 @@ export function taskBelongsToProject(
 	res: Response,
 	next: NextFunction,
 ) {
-	if (req.task.project.id.toString() !== req.project.id.toString()) {
+	const projectId = req.task.project.toString();
+	if (projectId !== req.project.id.toString()) {
 		return res.status(400).json(
-			objErrors({
+			createErrorSchema({
 				value: req.task.id,
 				msg: TaskErrorMsg.NotBelongToTheProject,
 				path: 'taskId',
@@ -76,7 +77,7 @@ export function validTaskStatus(
 ) {
 	if (!Object.values(taskStatus).includes(req.body.status)) {
 		return res.status(400).json(
-			objErrors({
+			createErrorSchema({
 				msg: TaskErrorMsg.InvalidStatus,
 				value: req.body.status,
 				path: 'status',

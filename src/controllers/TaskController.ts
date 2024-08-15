@@ -2,7 +2,7 @@ import { request, Request, Response } from 'express';
 import colors from 'colors';
 
 import Task from '../models/Task';
-import { objErrors } from '../utils';
+import { createErrorSchema } from '../utils';
 import { TaskErrorMsg, TaskSuccessMsg } from '../data/MessagesAPI';
 
 class TaskController {
@@ -79,7 +79,7 @@ class TaskController {
 			);
 
 			await Promise.allSettled([task.deleteOne(), project.save()]);
-			res.send(TaskSuccessMsg.UpdatedTask);
+			res.send(TaskSuccessMsg.DeletedTask);
 		} catch (err) {
 			console.log(
 				colors.bgRed.bold(
