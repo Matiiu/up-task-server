@@ -1,5 +1,3 @@
-import { ProjectErrorMsg } from '../data/MessagesAPI';
-
 type ErrorSchema = {
 	type?: string;
 	value?: string;
