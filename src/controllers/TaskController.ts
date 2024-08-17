@@ -2,8 +2,7 @@ import { request, Request, Response } from 'express';
 import colors from 'colors';
 
 import Task from '../models/Task';
-import { createErrorSchema } from '../utils';
-import { TaskErrorMsg, TaskSuccessMsg } from '../data/MessagesAPI';
+import { TaskSuccessMsg } from '../data/MessagesAPI';
 
 class TaskController {
 	static createTask = async (req: Request, res: Response) => {

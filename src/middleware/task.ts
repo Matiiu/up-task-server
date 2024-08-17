@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { Types } from 'mongoose';
 
-import { createErrorSchema } from '../utils';
+import { createErrorSchema } from '../utils/errorUtils';
 import Task, { taskStatus, TTask } from '../models/Task';
 import { TaskErrorMsg } from '../data/MessagesAPI';
 

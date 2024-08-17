@@ -1,4 +1,6 @@
 import mongoose, { Schema, Document } from 'mongoose';
+import { EMAIL_REGEX } from '../constants/authConstants';
+import uniqueValidator from 'mongoose-unique-validator';
 
 export type TUser = Document & {
 	name: string;
@@ -16,11 +18,6 @@ const UserSchema: Schema = new Schema({
 	password: {
 		type: String,
 		required: true,
-		minLength: [8, 'La contraseña debe tener al menos 8 caracteres'],
-		match: [
-			/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[-*@+])[A-Za-z\d-*@+]{8,}$/,
-			'La contraseña debe tener al menos una letra mayúscula, una letra minúscula, un número y un carácter especial',
-		],
 	},
 	email: {
 		type: String,
@@ -28,12 +25,16 @@ const UserSchema: Schema = new Schema({
 		unique: true,
 		trim: true,
 		lowercase: true,
-		match: [/^\S+@\S+\.\S+$/, 'Por favor, ingrese un email válido'],
+		match: [EMAIL_REGEX, 'El correo no es valido'],
 	},
 	isConfirmed: {
 		type: Boolean,
 		default: false,
 	},
+});
+
+UserSchema.plugin(uniqueValidator, {
+	message: 'El {PATH} {VALUE} ya esta en uso',
 });
 
 const User = mongoose.model<TUser>('User', UserSchema);
