@@ -4,6 +4,7 @@ import { hashPassword } from '../utils/authUtils';
 import { createErrorSchema } from '../utils/errorUtils';
 import { generateToken } from '../utils/tokenUtils';
 import Token from '../models/Token';
+import { transporter } from '../config/nodemailer';
 
 class AuthController {
 	static createAccount = async (req: Request, res: Response) => {
@@ -21,6 +22,16 @@ class AuthController {
 			const toke = new Token();
 			toke.user = user._id;
 			toke.token = generateToken();
+
+			await transporter.sendMail({
+				from: 'UpTask <admin@uptask.com>',
+				to: user.email,
+				subject: 'Confirma tu cuenta',
+				html: `
+					<h1>Confirma tu cuenta</h1>
+					<p>Para confirmar tu cuenta da click en el siguiente enlace</p>
+					<a href="http://localhost:3000/confirmar-cuenta/${toke.token}">Confirmar cuenta</a>`,
+			});
 
 			await Promise.allSettled([toke.save(), user.save()]);
 			res.send(
