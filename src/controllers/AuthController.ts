@@ -11,8 +11,8 @@ class AuthController {
 		try {
 			const { email, password } = req.body;
 
-			const isExistingEmail = await User.findOne({ email });
-			if (isExistingEmail) {
+			const foundEmail = await User.findOne({ email });
+			if (foundEmail) {
 				throw new Error('El correo ya esta en uso');
 			}
 			const user = new User(req.body);
