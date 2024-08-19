@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 import User from '../models/User';
-import { hashPassword } from '../utils/authUtils';
-import { createErrorSchema } from '../utils/errorUtils';
-import { generateToken } from '../utils/tokenUtils';
+import { hashPassword } from '../utils/authUtil';
+import { createErrorSchema } from '../utils/errorUtil';
+import { generateToken } from '../utils/tokenUtil';
 import Token from '../models/Token';
 import AuthEmail from '../emails/authEmail';
 

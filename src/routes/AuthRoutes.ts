@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { body } from 'express-validator';
 import AuthController from '../controllers/AuthController';
 import handleInputErrors from '../middleware/validation';
-import { EMAIL_REGEX, PASSWORD_REGEX } from '../constants/authConstants';
+import { EMAIL_REGEX, PASSWORD_REGEX } from '../constants/authConstant';
 
 const router: Router = Router();
 

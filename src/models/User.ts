@@ -1,5 +1,5 @@
 import mongoose, { Schema, Document } from 'mongoose';
-import { EMAIL_REGEX } from '../constants/authConstants';
+import { EMAIL_REGEX } from '../constants/authConstant';
 import uniqueValidator from 'mongoose-unique-validator';
 
 export type TUser = Document & {
