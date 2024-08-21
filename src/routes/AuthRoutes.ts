@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { body } from 'express-validator';
 import AuthController from '../controllers/AuthController';
 import handleInputErrors from '../middleware/validation';
-import { EMAIL_REGEX, PASSWORD_REGEX } from '../constants/authConstant';
+import { PASSWORD_REGEX } from '../constants/authConstant';
 
 const router: Router = Router();
 
@@ -22,11 +22,7 @@ router.post(
 		}
 		return true;
 	}),
-	body('email')
-		.isEmail()
-		.withMessage('El correo no es valido')
-		.matches(EMAIL_REGEX)
-		.withMessage('El correo no es valido'),
+	body('email').isEmail().withMessage('El correo no es valido'),
 	handleInputErrors,
 	AuthController.createAccount,
 );
@@ -36,6 +32,14 @@ router.post(
 	body('token').notEmpty().withMessage('El token es requerido'),
 	handleInputErrors,
 	AuthController.confirmAccount,
+);
+
+router.post(
+	'/login',
+	body('email').isEmail().withMessage('El correo no es valido'),
+	body('password').notEmpty().withMessage('La contraseña es requerida'),
+	handleInputErrors,
+	AuthController.login,
 );
 
 export default router;

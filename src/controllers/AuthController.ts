@@ -4,7 +4,8 @@ import { hashPassword } from '../utils/authUtil';
 import { createErrorSchema } from '../utils/errorUtil';
 import { generateToken } from '../utils/tokenUtil';
 import Token from '../models/Token';
-import AuthEmail from '../emails/authEmail';
+import AuthEmail from '../emails/AuthEmail';
+import { Types } from 'mongoose';
 
 class AuthController {
 	static createAccount = async (req: Request, res: Response) => {
@@ -19,9 +20,7 @@ class AuthController {
 			user.password = await hashPassword(password);
 
 			// Create a token for the user
-			const token = new Token();
-			token.user = user._id;
-			token.token = generateToken();
+			const token = await AuthController.createToken(user);
 
 			AuthEmail.sendConfirmationEmail({
 				email: user.email,
@@ -50,7 +49,7 @@ class AuthController {
 
 			const foundToken = await Token.findOne({ token });
 			if (!foundToken) {
-				throw new Error('El token no es valido');
+				throw new Error('El token no es valido o ha expirado');
 			}
 			const user = await User.findById(foundToken.user);
 			user.isConfirmed = true;
@@ -65,6 +64,50 @@ class AuthController {
 				}),
 			);
 		}
+	};
+
+	static login = async (req: Request, res: Response) => {
+		try {
+			const { email, password } = req.body;
+			const foundUser = await User.findOne({ email });
+			if (!foundUser) {
+				throw new Error('Usuario no encontrado');
+			}
+			if (!foundUser.isConfirmed) {
+				const token = await AuthController.createToken(foundUser);
+				AuthEmail.sendConfirmationEmail({
+					email: foundUser.email,
+					name: foundUser.name,
+					token: token.token,
+				});
+				throw new Error(
+					'La cuenta no ha sido confirmada, te hemos enviado un correo de confirmación a tu dirección de correo electrónico',
+				);
+			}
+			res.send('Login');
+		} catch (error) {
+			res.status(500).json(
+				createErrorSchema({
+					msg: error.message,
+					path: error.path,
+					value: error.value,
+				}),
+			);
+		}
+	};
+
+	private static createToken = async (user: any) => {
+		const token = new Token();
+		if (!('_id' in user)) {
+			throw new Error('ID de usuario no encontrado');
+		}
+		const id = user._id as Types.ObjectId;
+		await Token.deleteMany({ user: id });
+
+		token.user = id;
+		token.token = generateToken();
+		await token.save();
+		return token;
 	};
 }
 
