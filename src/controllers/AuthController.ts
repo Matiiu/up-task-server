@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import User from '../models/User';
+import User, { TUser } from '../models/User';
 import { hashPassword } from '../utils/authUtil';
 import { createErrorSchema } from '../utils/errorUtil';
 import { generateToken } from '../utils/tokenUtil';
@@ -96,15 +96,11 @@ class AuthController {
 		}
 	};
 
-	private static createToken = async (user: any) => {
+	private static createToken = async (user: TUser) => {
 		const token = new Token();
-		if (!('_id' in user)) {
-			throw new Error('ID de usuario no encontrado');
-		}
-		const id = user._id as Types.ObjectId;
-		await Token.deleteMany({ user: id });
+		await Token.deleteMany({ user: user._id });
 
-		token.user = id;
+		token.user = user._id;
 		token.token = generateToken();
 		await token.save();
 		return token;

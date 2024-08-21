@@ -1,8 +1,9 @@
 import { transporter } from '../config/nodemailer';
+import { TToken } from '../models/Token';
 
 type AuthEmailPayload = {
 	email: string;
-	token: string;
+	token: TToken['token'];
 	name: string;
 };
 
