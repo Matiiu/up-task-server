@@ -1,11 +1,10 @@
 import { Request, Response } from 'express';
 import User, { TUser } from '../models/User';
-import { hashPassword } from '../utils/authUtil';
+import { hashPassword, validatePassword } from '../utils/authUtil';
 import { createErrorSchema } from '../utils/errorUtil';
 import { generateToken } from '../utils/tokenUtil';
 import Token from '../models/Token';
 import AuthEmail from '../emails/AuthEmail';
-import { Types } from 'mongoose';
 
 class AuthController {
 	static createAccount = async (req: Request, res: Response) => {
@@ -84,7 +83,14 @@ class AuthController {
 					'La cuenta no ha sido confirmada, te hemos enviado un correo de confirmación a tu dirección de correo electrónico',
 				);
 			}
-			res.send('Login');
+			const isPasswordValid = await validatePassword(
+				password,
+				foundUser.password,
+			);
+			if (!isPasswordValid) {
+				throw new Error('La contraseña es incorrecta');
+			}
+			res.send('Autenticado correctamente');
 		} catch (error) {
 			res.status(500).json(
 				createErrorSchema({
