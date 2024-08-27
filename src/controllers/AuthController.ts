@@ -102,6 +102,42 @@ class AuthController {
 		}
 	};
 
+	static requestConfirmationToken = async (req: Request, res: Response) => {
+		try {
+			const { email } = req.body;
+
+			const user = await User.findOne({ email });
+			if (!user) {
+				throw new Error('El usuario no esta registrado');
+			}
+			if (user.isConfirmed) {
+				throw new Error('La cuenta ya ha sido confirmada');
+			}
+
+			// Create a token for the user
+			const token = await AuthController.createToken(user);
+
+			AuthEmail.sendConfirmationEmail({
+				email: user.email,
+				name: user.name,
+				token: token.token,
+			});
+
+			await Promise.allSettled([token.save(), user.save()]);
+			res.send(
+				'Se ha enviado un código de confirmación a tu dirección de correo electrónico',
+			);
+		} catch (error) {
+			res.status(500).json(
+				createErrorSchema({
+					msg: error.message,
+					path: error.path,
+					value: error.value,
+				}),
+			);
+		}
+	};
+
 	private static createToken = async (user: TUser) => {
 		const token = new Token();
 		await Token.deleteMany({ user: user._id });

@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router, request } from 'express';
 import { body } from 'express-validator';
 import AuthController from '../controllers/AuthController';
 import handleInputErrors from '../middleware/validation';
@@ -40,6 +40,13 @@ router.post(
 	body('password').notEmpty().withMessage('La contraseña es requerida'),
 	handleInputErrors,
 	AuthController.login,
+);
+
+router.post(
+	'/request-token',
+	body('email').isEmail().withMessage('El correo no es valido'),
+	handleInputErrors,
+	AuthController.requestConfirmationToken,
 );
 
 export default router;
