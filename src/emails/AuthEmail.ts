@@ -19,7 +19,7 @@ class AuthEmail {
 					<h1>Confirma tu cuenta</h1>
                     <p>Hola ${payload.name}, has creado tu cuenta en UpTask.</p>
 					<p>Para confirmar tu cuenta da click en el siguiente enlace</p>
-					<a href="${process.env.CONFIRM_ACCOUNT_URL}/${payload.token}">Confirmar cuenta</a>
+					<a href="${process.env.CONFIRM_ACCOUNT_URL}">Confirmar cuenta</a>
                     <p>E ingresa el código: <b>${payload.token}</b></p>
                     <p>Este token expira en 10 minutos</p>`,
 		});
