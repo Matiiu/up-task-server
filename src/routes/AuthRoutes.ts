@@ -49,4 +49,11 @@ router.post(
 	AuthController.requestConfirmationToken,
 );
 
+router.post(
+	'/restore-password',
+	body('email').isEmail().withMessage('El correo no es valido'),
+	handleInputErrors,
+	AuthController.restorePassword,
+);
+
 export default router;

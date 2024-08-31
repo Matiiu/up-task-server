@@ -138,6 +138,27 @@ class AuthController {
 		}
 	};
 
+	static restorePassword = async (req: Request, res: Response) => {
+		const { email } = req.body;
+
+		const user = await User.findOne({ email });
+		if (!user) {
+			throw new Error('El usuario no esta registrado');
+		}
+
+		// Create a token for the user
+		const token = await AuthController.createToken(user);
+
+		AuthEmail.sendRestorePasswordToken({
+			email: user.email,
+			name: user.name,
+			token: token.token,
+		});
+		res.send(
+			'Se ha enviado un correo con un token para restablecer tu contraseña',
+		);
+	};
+
 	private static createToken = async (user: TUser) => {
 		const token = new Token();
 		await Token.deleteMany({ user: user._id });
