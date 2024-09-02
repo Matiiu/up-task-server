@@ -140,33 +140,90 @@ class AuthController {
 
 	static restorePassword = async (req: Request, res: Response) => {
 		const { email } = req.body;
+		try {
+			const user = await User.findOne({ email });
+			if (!user) {
+				throw new Error('El usuario no esta registrado');
+			}
 
-		const user = await User.findOne({ email });
-		if (!user) {
-			throw new Error('El usuario no esta registrado');
+			// Create a token for the user
+			const token = await AuthController.createToken(user);
+
+			AuthEmail.sendRestorePasswordToken({
+				email: user.email,
+				name: user.name,
+				token: token.token,
+			});
+			res.send(
+				'Se ha enviado un correo con un token para restablecer tu contraseña',
+			);
+		} catch (error) {
+			res.status(500).json(
+				createErrorSchema({
+					msg: error.message,
+					path: error.path,
+					value: error.value,
+				}),
+			);
 		}
+	};
 
-		// Create a token for the user
-		const token = await AuthController.createToken(user);
+	static validateToken = async (req: Request, res: Response) => {
+		const { token } = req.body;
+		try {
+			const foundToken = await Token.findOne({ token });
+			if (!foundToken) {
+				throw new Error('El token no es valido o ha expirado');
+			}
+			res.send('El token es valido, define una nueva contraseña');
+		} catch (error) {
+			res.status(500).json(
+				createErrorSchema({
+					msg: error.message,
+					path: error.path,
+					value: error.value,
+				}),
+			);
+		}
+	};
 
-		AuthEmail.sendRestorePasswordToken({
-			email: user.email,
-			name: user.name,
-			token: token.token,
-		});
-		res.send(
-			'Se ha enviado un correo con un token para restablecer tu contraseña',
-		);
+	static updatePasswordByToken = async (req: Request, res: Response) => {
+		try {
+			const { token } = req.params;
+			const { password } = req.body;
+
+			const foundToken = await Token.findOne({ token });
+			if (!foundToken) {
+				throw new Error('El token no es valido o ha expirado');
+			}
+			const user = await User.findById(foundToken.user);
+			user.password = await hashPassword(password);
+			await Promise.allSettled([user.save(), foundToken.deleteOne()]);
+
+			res.send('La contraseña ha sido actualizada correctamente');
+		} catch (error) {
+			res.status(500).json(
+				createErrorSchema({
+					msg: error.message,
+					path: error.path,
+					value: error.value,
+				}),
+			);
+		}
 	};
 
 	private static createToken = async (user: TUser) => {
 		const token = new Token();
-		await Token.deleteMany({ user: user._id });
+		await this.deleteTokensByUserId(user.id);
 
-		token.user = user._id;
+		token.user = user.id;
 		token.token = generateToken();
 		await token.save();
 		return token;
+	};
+
+	private static deleteTokensByUserId = async (userId: TUser['id']) => {
+		await Token.deleteMany({ user: userId });
 	};
 }
 
