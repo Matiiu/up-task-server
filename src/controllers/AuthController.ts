@@ -67,24 +67,21 @@ class AuthController {
 	static login = async (req: Request, res: Response) => {
 		try {
 			const { email, password } = req.body;
-			const foundUser = await User.findOne({ email });
-			if (!foundUser) {
-				throw new Error('Usuario no encontrado');
+			const user = await User.findOne({ email });
+			if (!user) {
+				throw new Error('El usuario no esta registrado');
 			}
-			if (!foundUser.isConfirmed) {
-				const token = await AuthController.createToken(foundUser);
+			if (!user.isConfirmed) {
+				const token = await AuthController.createToken(user);
 				AuthEmail.sendConfirmationEmail({
-					user: foundUser,
+					user,
 					token: token.token,
 				});
 				throw new Error(
 					'La cuenta no ha sido confirmada, te hemos enviado un correo de confirmación a tu dirección de correo electrónico',
 				);
 			}
-			const isPasswordValid = await validatePassword(
-				password,
-				foundUser.password,
-			);
+			const isPasswordValid = await validatePassword(password, user.password);
 			if (!isPasswordValid) {
 				throw new Error('La contraseña es incorrecta');
 			}
@@ -183,7 +180,7 @@ class AuthController {
 		}
 	};
 
-	static updatePasswordByToken = async (req: Request, res: Response) => {
+	static createNewPasswordByToken = async (req: Request, res: Response) => {
 		try {
 			const { token } = req.params;
 			const { password } = req.body;

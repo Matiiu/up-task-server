@@ -64,7 +64,7 @@ router.post(
 );
 
 router.post(
-	'/update-password/:token',
+	'/new-password/:token',
 	param('token').notEmpty().withMessage('El token es requerido'),
 	body('password')
 		.isLength({ min: 8 })
@@ -81,7 +81,7 @@ router.post(
 		return true;
 	}),
 	handleInputErrors,
-	AuthController.updatePasswordByToken,
+	AuthController.createNewPasswordByToken,
 );
 
 export default router;
