@@ -22,8 +22,7 @@ class AuthController {
 			const token = await AuthController.createToken(user);
 
 			AuthEmail.sendConfirmationEmail({
-				email: user.email,
-				name: user.name,
+				user,
 				token: token.token,
 			});
 
@@ -75,8 +74,7 @@ class AuthController {
 			if (!foundUser.isConfirmed) {
 				const token = await AuthController.createToken(foundUser);
 				AuthEmail.sendConfirmationEmail({
-					email: foundUser.email,
-					name: foundUser.name,
+					user: foundUser,
 					token: token.token,
 				});
 				throw new Error(
@@ -118,8 +116,7 @@ class AuthController {
 			const token = await AuthController.createToken(user);
 
 			AuthEmail.sendConfirmationEmail({
-				email: user.email,
-				name: user.name,
+				user,
 				token: token.token,
 			});
 
@@ -150,8 +147,7 @@ class AuthController {
 			const token = await AuthController.createToken(user);
 
 			AuthEmail.sendRestorePasswordToken({
-				email: user.email,
-				name: user.name,
+				user,
 				token: token.token,
 			});
 			res.send(
