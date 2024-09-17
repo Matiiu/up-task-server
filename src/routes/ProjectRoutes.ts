@@ -4,14 +4,17 @@ import ProjectController from '../controllers/ProjectController';
 import { ProjectErrorMsg, TaskErrorMsg } from '../data/MessagesAPI';
 import handleInputErrors from '../middleware/validation';
 import TaskController from '../controllers/TaskController';
-import { productNotFound, validateProjectExists } from '../middleware/project';
+import { projectNotFound, validateProjectExists } from '../middleware/project';
 import {
 	validateTaskExists,
 	taskBelongsToProject,
 	validTaskStatus,
 } from '../middleware/task';
+import { handleAuthenticate, validateUser } from '../middleware/auth';
 
 const router: Router = Router();
+
+router.use(handleAuthenticate, validateUser);
 
 router.post(
 	'/',
@@ -26,9 +29,9 @@ router.post(
 	ProjectController.createProject,
 );
 
-router.get('/', ProjectController.getAllProjects);
+router.get('/', ProjectController.getProjects);
 
-router.param('id', productNotFound);
+router.param('id', projectNotFound);
 
 router.get('/:id', ProjectController.getProjectById);
 

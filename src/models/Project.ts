@@ -1,5 +1,6 @@
 import mongoose, { Schema, Document, PopulatedDoc, Types } from 'mongoose';
 import { TTask } from './Task';
+import { TUser } from './User';
 
 // TS Types
 type TProject = Document & {
@@ -7,6 +8,7 @@ type TProject = Document & {
 	clientName: string;
 	description: string;
 	tasks: PopulatedDoc<TTask & Document>[];
+	manager: PopulatedDoc<TUser & Document>;
 };
 
 // Mongoose Types
@@ -33,6 +35,10 @@ const ProjectSchema: Schema = new Schema(
 				ref: 'Task',
 			},
 		],
+		manager: {
+			type: Types.ObjectId,
+			ref: 'User',
+		},
 	},
 	{ timestamps: true },
 );

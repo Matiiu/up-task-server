@@ -13,7 +13,7 @@ declare global {
 	}
 }
 
-export async function productNotFound(
+export async function projectNotFound(
 	req: Request,
 	res: Response,
 	next: NextFunction,
@@ -33,6 +33,17 @@ export async function productNotFound(
 
 		if (!project) {
 			return res.status(404).json(createErrorSchema({ value: req.params.id }));
+		}
+
+		console.log('project.manager', project.manager);
+		console.log('req.safeUser.id', req.safeUser.id);
+		if (project.manager.toString() !== req.safeUser.id.toString()) {
+			return res.status(403).json(
+				createErrorSchema({
+					msg: 'No tienes permisos para acceder a este proyecto',
+					value: id,
+				}),
+			);
 		}
 		req.project = project;
 		next();
