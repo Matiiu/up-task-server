@@ -5,6 +5,7 @@ import { createErrorSchema } from '../utils/errorUtil';
 import { generateToken } from '../utils/tokenUtil';
 import Token from '../models/Token';
 import AuthEmail from '../emails/AuthEmail';
+import { generateJSONWebToken } from '../utils/jwt';
 
 class AuthController {
 	static createAccount = async (req: Request, res: Response) => {
@@ -85,7 +86,8 @@ class AuthController {
 			if (!isPasswordValid) {
 				throw new Error('La contraseña es incorrecta');
 			}
-			res.send('Autenticado correctamente');
+			const token = generateJSONWebToken({ id: user.id });
+			res.send({ token });
 		} catch (error) {
 			res.status(500).json(
 				createErrorSchema({
