@@ -27,13 +27,13 @@ export function handleAuthenticate(
 		const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
 		if (typeof decoded === 'string' || !('id' in decoded)) {
-			return res.status(401).json({ message: 'Invalid token payload' });
+			return res.status(401).json({ error: 'Invalid token payload' });
 		}
 		req.userId = decoded.id;
 		next();
 	} catch (error) {
 		console.log(colors.bgRed.white(error?.message || error));
-		return res.status(401).json({ message: 'Invalid token' });
+		return res.status(401).json({ error: 'Invalid token' });
 	}
 }
 
@@ -43,7 +43,7 @@ export async function validateUser(
 	next: NextFunction,
 ) {
 	if (!req.userId) {
-		return res.status(401).json({ message: 'Unauthorized' });
+		return res.status(401).json({ error: 'Unauthorized' });
 	}
 
 	try {
@@ -51,11 +51,11 @@ export async function validateUser(
 			'-password -createdAt -updatedAt -__v',
 		);
 		if (!safeUser) {
-			return res.status(401).json({ message: 'Unauthorized' });
+			return res.status(401).json({ error: 'Unauthorized' });
 		}
 		req.safeUser = safeUser;
 		next();
 	} catch (error) {
-		return res.status(401).json({ message: 'Unauthorized' });
+		return res.status(401).json({ error: 'Unauthorized' });
 	}
 }
