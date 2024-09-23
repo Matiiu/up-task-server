@@ -32,16 +32,10 @@ export async function projectNotFound(
 		const project = await Project.findById(req.params.id).populate('tasks');
 
 		if (!project) {
-			return res.status(404).json(createErrorSchema({ value: req.params.id }));
-		}
-
-		console.log('project.manager', project.manager);
-		console.log('req.safeUser.id', req.safeUser.id);
-		if (project.manager.toString() !== req.safeUser.id.toString()) {
-			return res.status(403).json(
+			return res.status(404).json(
 				createErrorSchema({
-					msg: 'No tienes permisos para acceder a este proyecto',
-					value: id,
+					value: req.params.id,
+					msg: 'Proyecto no encontrado',
 				}),
 			);
 		}
@@ -50,7 +44,34 @@ export async function projectNotFound(
 	} catch (err) {
 		res.status(500).json(
 			createErrorSchema({
-				msg: 'Ocurrio un error',
+				msg: 'Ocurrió un error',
+				value: req.params.projectId,
+			}),
+		);
+	}
+}
+
+export function validateUserPermissions(
+	req: Request,
+	res: Response,
+	next: NextFunction,
+) {
+	try {
+		const { id } = req.params;
+
+		if (req.project.manager.toString() !== req.safeUser.id.toString()) {
+			return res.status(403).json(
+				createErrorSchema({
+					msg: 'No tienes permisos para acceder a este proyecto',
+					value: id,
+				}),
+			);
+		}
+		next();
+	} catch (err) {
+		res.status(500).json(
+			createErrorSchema({
+				msg: 'Ocurrió un error',
 				value: req.params.projectId,
 			}),
 		);
@@ -81,6 +102,7 @@ export async function validateProjectExists(
 				createErrorSchema({
 					value: projectId,
 					path: 'projectId',
+					msg: 'Proyecto no encontrado',
 				}),
 			);
 		}
@@ -89,7 +111,7 @@ export async function validateProjectExists(
 	} catch (err) {
 		res.status(500).json(
 			createErrorSchema({
-				msg: 'Ocurrio un error',
+				msg: 'Ocurrió un error',
 				value: req.params.projectId,
 			}),
 		);

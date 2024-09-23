@@ -207,6 +207,10 @@ class AuthController {
 		}
 	};
 
+	static getAuthenticatedUser = (req: Request, res: Response) => {
+		return res.json(req.safeUser);
+	};
+
 	private static createToken = async (user: TUser) => {
 		const token = new Token();
 		await this.deleteTokensByUserId(user.id);

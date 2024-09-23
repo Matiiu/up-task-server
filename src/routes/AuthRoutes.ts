@@ -3,6 +3,7 @@ import { body, param } from 'express-validator';
 import AuthController from '../controllers/AuthController';
 import handleInputErrors from '../middleware/validation';
 import { PASSWORD_REGEX } from '../constants/authConstant';
+import { handleUserAuthentication, validateUser } from '../middleware/auth';
 
 const router: Router = Router();
 
@@ -82,6 +83,13 @@ router.post(
 	}),
 	handleInputErrors,
 	AuthController.createNewPasswordByToken,
+);
+
+router.get(
+	'/user',
+	handleUserAuthentication,
+	validateUser,
+	AuthController.getAuthenticatedUser,
 );
 
 export default router;

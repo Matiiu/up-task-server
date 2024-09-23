@@ -12,7 +12,7 @@ declare global {
 	}
 }
 
-export function handleAuthenticate(
+export function handleUserAuthentication(
 	req: Request,
 	res: Response,
 	next: NextFunction,

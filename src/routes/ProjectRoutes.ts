@@ -1,20 +1,24 @@
 import { Router } from 'express';
-import { body, param } from 'express-validator';
+import { body } from 'express-validator';
 import ProjectController from '../controllers/ProjectController';
 import { ProjectErrorMsg, TaskErrorMsg } from '../data/MessagesAPI';
 import handleInputErrors from '../middleware/validation';
 import TaskController from '../controllers/TaskController';
-import { projectNotFound, validateProjectExists } from '../middleware/project';
+import {
+	projectNotFound,
+	validateProjectExists,
+	validateUserPermissions,
+} from '../middleware/project';
 import {
 	validateTaskExists,
 	taskBelongsToProject,
 	validTaskStatus,
 } from '../middleware/task';
-import { handleAuthenticate, validateUser } from '../middleware/auth';
+import { handleUserAuthentication, validateUser } from '../middleware/auth';
 
 const router: Router = Router();
 
-router.use(handleAuthenticate, validateUser);
+router.use(handleUserAuthentication, validateUser);
 
 router.post(
 	'/',
@@ -32,6 +36,7 @@ router.post(
 router.get('/', ProjectController.getProjects);
 
 router.param('id', projectNotFound);
+router.param('id', validateUserPermissions);
 
 router.get('/:id', ProjectController.getProjectById);
 
