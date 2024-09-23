@@ -208,7 +208,7 @@ class AuthController {
 	};
 
 	static getAuthenticatedUser = (req: Request, res: Response) => {
-		return res.json(req.safeUser);
+		return res.json(req.user);
 	};
 
 	private static createToken = async (user: TUser) => {

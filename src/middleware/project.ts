@@ -59,7 +59,7 @@ export function validateUserPermissions(
 	try {
 		const { id } = req.params;
 
-		if (req.project.manager.toString() !== req.safeUser.id.toString()) {
+		if (req.project.manager.toString() !== req.user.id.toString()) {
 			return res.status(403).json(
 				createErrorSchema({
 					msg: 'No tienes permisos para acceder a este proyecto',
