@@ -9,6 +9,7 @@ type TProject = Document & {
 	description: string;
 	tasks: PopulatedDoc<TTask & Document>[];
 	manager: PopulatedDoc<TUser & Document>;
+	team: PopulatedDoc<TUser & Document>[];
 };
 
 // Mongoose Types
@@ -39,6 +40,12 @@ const ProjectSchema: Schema = new Schema(
 			type: Types.ObjectId,
 			ref: 'User',
 		},
+		team: [
+			{
+				type: Types.ObjectId,
+				ref: 'User',
+			},
+		],
 	},
 	{ timestamps: true },
 );

@@ -6,6 +6,7 @@ import { connectDB } from './config/db';
 import corsConfig from './config/cors';
 import authRoutes from './routes/AuthRoutes';
 import projectRotes from './routes/ProjectRoutes';
+import teamRoutes from './routes/TeamRoutes';
 
 // Call environment variables
 dotenv.config();
@@ -24,5 +25,6 @@ app.use(express.json());
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/projects', projectRotes);
+app.use('/api/team', teamRoutes);
 
 export default app;

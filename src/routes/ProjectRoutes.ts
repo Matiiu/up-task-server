@@ -18,6 +18,7 @@ import { handleUserAuthentication, validateUser } from '../middleware/auth';
 
 const router: Router = Router();
 
+// Add handleUserAuthentication and validateUser functions to all routes
 router.use(handleUserAuthentication, validateUser);
 
 router.post(
