@@ -7,7 +7,7 @@ declare global {
 	namespace Express {
 		interface Request {
 			userId: TUser['_id'];
-			user: Omit<TUser, 'password'>;
+			authenticatedUser: Omit<TUser, 'password'>;
 		}
 	}
 }
@@ -47,11 +47,13 @@ export async function validateUser(
 	}
 
 	try {
-		const user = await User.findById(req.userId).select('-password');
+		const user = await User.findById(req.userId).select(
+			'_id email name createdAt updatedAt',
+		);
 		if (!user) {
 			return res.status(401).json({ error: 'Unauthorized' });
 		}
-		req.user = user;
+		req.authenticatedUser = user;
 		next();
 	} catch (error) {
 		return res.status(401).json({ error: 'Unauthorized' });

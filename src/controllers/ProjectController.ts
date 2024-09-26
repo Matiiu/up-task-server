@@ -5,7 +5,7 @@ import colors from 'colors';
 class ProjectController {
 	static createProject = async (req: Request, res: Response) => {
 		const project = new Project(req.body);
-		project.manager = req.user.id;
+		project.manager = req.authenticatedUser.id;
 
 		try {
 			await project.save();
@@ -22,7 +22,7 @@ class ProjectController {
 	static getProjects = async (req: Request, res: Response) => {
 		try {
 			const projects = await Project.find({
-				manager: req.user.id,
+				manager: req.authenticatedUser.id,
 			}).populate('tasks');
 
 			if (!projects) {

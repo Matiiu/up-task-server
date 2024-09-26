@@ -31,7 +31,8 @@ export default class TeamController {
 			const { projectId } = req.params;
 			const project = await Project.findById(projectId).populate({
 				path: 'team',
-				select: '-password -__v',
+				select: '_id name email createdAt updatedAt',
+				match: { isConfirmed: true },
 			});
 			res.json(project.team);
 		} catch (error) {
@@ -42,7 +43,9 @@ export default class TeamController {
 	static async findMemberByEmail(req: Request, res: Response) {
 		try {
 			const { email } = req.body;
-			const user = await User.findOne({ email }).select('-password');
+			const user = await User.findOne({ email, isConfirmed: true }).select(
+				'_id email name createdAt updatedAt',
+			);
 			if (!user) {
 				return res.status(404).json({ message: 'User not found' });
 			}
