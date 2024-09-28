@@ -31,7 +31,7 @@ export default class TeamController {
 			const { projectId } = req.params;
 			const project = await Project.findById(projectId).populate({
 				path: 'team',
-				select: '_id name email createdAt updatedAt',
+				select: '_id name email',
 				match: { isConfirmed: true },
 			});
 			res.json(project.team);
@@ -44,10 +44,10 @@ export default class TeamController {
 		try {
 			const { email } = req.body;
 			const user = await User.findOne({ email, isConfirmed: true }).select(
-				'_id email name createdAt updatedAt',
+				'_id email name',
 			);
 			if (!user) {
-				return res.status(404).json({ message: 'User not found' });
+				return res.status(404).json({ message: 'Usuario no Encontrado' });
 			}
 			res.json(user);
 		} catch (error) {
