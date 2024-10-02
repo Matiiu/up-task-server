@@ -57,7 +57,7 @@ export default class TeamController {
 
 	static async removeMemberByUserId(req: Request, res: Response) {
 		try {
-			const { userId } = req.body;
+			const { userId } = req.params;
 			const isExistingUser = req.project.team.some(
 				(id) => id.toString() === userId.toString(),
 			);

@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { body } from 'express-validator';
+import { body, param } from 'express-validator';
 import TeamController from '../controllers/TeamController';
 import { validateProjectExists } from '../middleware/project';
 import handleInputErrors from '../middleware/validation';
@@ -30,8 +30,8 @@ router.post(
 );
 
 router.delete(
-	'/:projectId',
-	body('userId').isMongoId().withMessage('El ID del usuario no es valido'),
+	'/:projectId/:userId',
+	param('userId').isMongoId().withMessage('El ID del usuario no es valido'),
 	handleInputErrors,
 	TeamController.removeMemberByUserId,
 );
