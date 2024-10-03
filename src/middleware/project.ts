@@ -58,9 +58,11 @@ export function validateUserPermissions(
 ) {
 	try {
 		const { id } = req.params;
+		const { team } = req.project;
 
 		if (
-			req.project.manager.toString() !== req.authenticatedUser.id.toString()
+			req.project.manager.toString() !== req.authenticatedUser.id.toString() &&
+			!team.includes(req.authenticatedUser.id)
 		) {
 			return res.status(403).json(
 				createErrorSchema({

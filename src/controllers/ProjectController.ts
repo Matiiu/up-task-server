@@ -22,7 +22,10 @@ class ProjectController {
 	static getProjects = async (req: Request, res: Response) => {
 		try {
 			const projects = await Project.find({
-				manager: req.authenticatedUser.id,
+				$or: [
+					{ manager: req.authenticatedUser.id },
+					{ team: req.authenticatedUser.id },
+				],
 			}).populate('tasks');
 
 			if (!projects) {
