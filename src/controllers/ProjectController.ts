@@ -24,7 +24,7 @@ class ProjectController {
 			const projects = await Project.find({
 				$or: [
 					{ manager: req.authenticatedUser.id },
-					{ team: req.authenticatedUser.id },
+					{ team: { $in: [req.authenticatedUser.id] } },
 				],
 			}).populate('tasks');
 
