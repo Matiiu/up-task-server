@@ -43,7 +43,11 @@ class TaskController {
 
 	static getTaskById = async (req: Request, res: Response) => {
 		try {
-			res.json(req.task);
+			const task = await Task.findById(req.params.taskId).populate({
+				path: 'completedBy',
+				select: 'id name email',
+			});
+			res.json(task);
 		} catch (err) {
 			console.log(
 				colors.bgRed.bold(
