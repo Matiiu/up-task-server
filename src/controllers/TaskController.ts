@@ -90,7 +90,10 @@ class TaskController {
 
 	static updateStatus = async (req: Request, res: Response) => {
 		try {
-			req.task.status = req.body.status;
+			const { status } = req.body;
+			req.task.status = status;
+			req.task.completedBy =
+				status?.toLowerCase() === 'pending' ? null : req.userId;
 			await req.task.save();
 			res.send(TaskSuccessMsg.UpdatedTask);
 		} catch (err) {
