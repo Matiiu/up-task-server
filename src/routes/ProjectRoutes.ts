@@ -13,6 +13,7 @@ import {
 	validateTaskExists,
 	taskBelongsToProject,
 	validTaskStatus,
+	hasAuthorization,
 } from '../middleware/task';
 import { handleUserAuthentication, validateUser } from '../middleware/auth';
 
@@ -63,6 +64,7 @@ router.param('projectId', validateProjectExists);
 
 router.post(
 	'/:projectId/tasks',
+	hasAuthorization,
 	body('name').notEmpty().withMessage(TaskErrorMsg.MissingTaskName),
 	body('description').notEmpty().withMessage(TaskErrorMsg.MissingDescription),
 	handleInputErrors,
@@ -79,13 +81,18 @@ router.get('/:projectId/tasks/:taskId', TaskController.getTaskById);
 
 router.put(
 	'/:projectId/tasks/:taskId',
+	hasAuthorization,
 	body('name').notEmpty().withMessage(TaskErrorMsg.MissingTaskName),
 	body('description').notEmpty().withMessage(TaskErrorMsg.MissingDescription),
 	handleInputErrors,
 	TaskController.updateTask,
 );
 
-router.delete('/:projectId/tasks/:taskId', TaskController.deleteTask);
+router.delete(
+	'/:projectId/tasks/:taskId',
+	hasAuthorization,
+	TaskController.deleteTask,
+);
 
 router.post(
 	'/:projectId/tasks/:taskId/status',

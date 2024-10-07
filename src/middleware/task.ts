@@ -87,3 +87,20 @@ export function validTaskStatus(
 	}
 	next();
 }
+
+export function hasAuthorization(
+	req: Request,
+	res: Response,
+	next: NextFunction,
+) {
+	console.log({
+		hasAuthorizationproject: req.project,
+		hasAuthorizationuser: req.userId,
+	});
+	if (req.userId.toString() !== req.project.manager.toString()) {
+		return res
+			.status(403)
+			.json({ message: 'No tiene permisos para realizar esta acción' });
+	}
+	next();
+}

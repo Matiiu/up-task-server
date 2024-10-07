@@ -4,6 +4,7 @@ import TeamController from '../controllers/TeamController';
 import { validateProjectExists } from '../middleware/project';
 import handleInputErrors from '../middleware/validation';
 import { handleUserAuthentication, validateUser } from '../middleware/auth';
+import { hasAuthorization } from '../middleware/task';
 
 const router: Router = Router();
 
@@ -15,12 +16,13 @@ router.param('projectId', validateProjectExists);
 
 router.post(
 	'/:projectId',
+	hasAuthorization,
 	body('userId').isMongoId().withMessage('El ID del usuario no es valido'),
 	handleInputErrors,
 	TeamController.addMemberByUserId,
 );
 
-router.get('/:projectId', TeamController.getTeam);
+router.get('/:projectId', hasAuthorization, TeamController.getTeam);
 
 router.post(
 	'/:projectId/find',
@@ -31,6 +33,7 @@ router.post(
 
 router.delete(
 	'/:projectId/:userId',
+	hasAuthorization,
 	param('userId').isMongoId().withMessage('El ID del usuario no es valido'),
 	handleInputErrors,
 	TeamController.removeMemberByUserId,
