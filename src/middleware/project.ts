@@ -13,44 +13,6 @@ declare global {
 	}
 }
 
-export async function projectNotFound(
-	req: Request,
-	res: Response,
-	next: NextFunction,
-) {
-	try {
-		const { id } = req.params;
-
-		if (!Types.ObjectId.isValid(id)) {
-			return res.status(400).json(
-				createErrorSchema({
-					value: id,
-					msg: ProjectErrorMsg.IsNotMongoId,
-				}),
-			);
-		}
-		const project = await Project.findById(req.params.id).populate('tasks');
-
-		if (!project) {
-			return res.status(404).json(
-				createErrorSchema({
-					value: req.params.id,
-					msg: 'Proyecto no encontrado',
-				}),
-			);
-		}
-		req.project = project;
-		next();
-	} catch (err) {
-		res.status(500).json(
-			createErrorSchema({
-				msg: 'Ocurrió un error',
-				value: req.params.projectId,
-			}),
-		);
-	}
-}
-
 export function validateUserPermissions(
 	req: Request,
 	res: Response,

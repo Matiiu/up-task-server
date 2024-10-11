@@ -5,7 +5,6 @@ import { ProjectErrorMsg, TaskErrorMsg } from '../data/MessagesAPI';
 import handleInputErrors from '../middleware/validation';
 import TaskController from '../controllers/TaskController';
 import {
-	projectNotFound,
 	validateProjectExists,
 	validateUserPermissions,
 } from '../middleware/project';
@@ -37,7 +36,7 @@ router.post(
 
 router.get('/', ProjectController.getProjects);
 
-router.param('id', projectNotFound);
+router.param('id', validateProjectExists);
 router.param('id', validateUserPermissions);
 
 router.get('/:id', ProjectController.getProjectById);

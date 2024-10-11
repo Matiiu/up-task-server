@@ -93,7 +93,7 @@ export function hasAuthorization(
 	res: Response,
 	next: NextFunction,
 ) {
-	if (req.userId.toString() !== req.project.manager.toString()) {
+	if (req.user._id.toString() !== req.project.manager.toString()) {
 		return res
 			.status(403)
 			.json({ message: 'No tiene permisos para realizar esta acción' });

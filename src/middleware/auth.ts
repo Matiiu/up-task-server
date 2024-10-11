@@ -1,18 +1,18 @@
 import { Request, Response, NextFunction } from 'express';
 import colors from 'colors';
 import jwt from 'jsonwebtoken';
-import User, { TUser } from '../models/User';
+import User, { type TUser } from '../models/User';
 
 declare global {
 	namespace Express {
 		interface Request {
-			userId: TUser['_id'];
+			user: TUser;
 			authenticatedUser: Omit<TUser, 'password'>;
 		}
 	}
 }
 
-export function handleUserAuthentication(
+export async function handleUserAuthentication(
 	req: Request,
 	res: Response,
 	next: NextFunction,
@@ -29,7 +29,11 @@ export function handleUserAuthentication(
 		if (typeof decoded === 'string' || !('id' in decoded)) {
 			return res.status(401).json({ error: 'Invalid token payload' });
 		}
-		req.userId = decoded.id;
+		const user = await User.findById(decoded.id);
+		if (!user) {
+			return res.status(401).json({ error: 'Invalid token' });
+		}
+		req.user = user;
 		next();
 	} catch (error) {
 		console.log(colors.bgRed.white(error?.message || error));
@@ -42,12 +46,13 @@ export async function validateUser(
 	res: Response,
 	next: NextFunction,
 ) {
-	if (!req.userId) {
+	const { id } = req.user;
+	if (!id) {
 		return res.status(401).json({ error: 'Unauthorized' });
 	}
 
 	try {
-		const user = await User.findById(req.userId).select(
+		const user = await User.findById(id).select(
 			'_id email name createdAt updatedAt',
 		);
 		if (!user) {

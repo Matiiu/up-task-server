@@ -7,6 +7,7 @@ import corsConfig from './config/cors';
 import authRoutes from './routes/AuthRoutes';
 import projectRotes from './routes/ProjectRoutes';
 import teamRoutes from './routes/TeamRoutes';
+import NoteRoutes from './routes/NoteRoutes';
 
 // Call environment variables
 dotenv.config();
@@ -23,8 +24,11 @@ app.use(morgan('dev'));
 app.use(express.json());
 
 // Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/projects', projectRotes);
-app.use('/api/team', teamRoutes);
+const endpoint = process.env?.END_POINT || '';
+
+app.use(`${endpoint}/auth`, authRoutes);
+app.use(`${endpoint}/projects`, projectRotes);
+app.use(`${endpoint}/team`, teamRoutes);
+app.use(`${endpoint}/notes`, NoteRoutes);
 
 export default app;

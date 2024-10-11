@@ -43,10 +43,12 @@ class TaskController {
 
 	static getTaskById = async (req: Request, res: Response) => {
 		try {
-			const task = await Task.findById(req.params.taskId).populate({
-				path: 'completedBy',
-				select: 'id name email',
-			});
+			const task = await Task.findById(req.params.taskId)
+				.populate({
+					path: 'completedBy.user',
+					select: 'id name email',
+				})
+				.populate({ path: 'notes', populate: { path: 'createdBy' } });
 			res.json(task);
 		} catch (err) {
 			console.log(
@@ -96,8 +98,12 @@ class TaskController {
 		try {
 			const { status } = req.body;
 			req.task.status = status;
-			req.task.completedBy =
-				status?.toLowerCase() === 'pending' ? null : req.userId;
+			const completedBy = {
+				user: req.user._id,
+				status,
+			};
+			req.task.completedBy.push(completedBy);
+
 			await req.task.save();
 			res.send(TaskSuccessMsg.UpdatedTask);
 		} catch (err) {
