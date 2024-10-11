@@ -1,4 +1,5 @@
 import type { Request, Response } from 'express';
+import { Types } from 'mongoose';
 import Note, { type TNote } from '../models/Note';
 import colors from 'colors';
 
@@ -34,6 +35,25 @@ export default class NoteController {
 			console.log(
 				colors.bgRed.bold(
 					'An error occurred while fetching notes:\n' + error?.message || error,
+				),
+			);
+			res.status(500).json({ message: 'Error inesperado' });
+		}
+	};
+
+	static delete = async (req: Request, res: Response) => {
+		req.task.notes = req.task.notes.filter(
+			(note) => note.toString() !== req.note._id.toString(),
+		);
+
+		try {
+			await Promise.allSettled([req.note.deleteOne(), req.task.save()]);
+			res.send('Nota eliminada correctamente');
+		} catch (error) {
+			console.log(
+				colors.bgRed.bold(
+					'An error occurred while deleting a note:\n' + error?.message ||
+						error,
 				),
 			);
 			res.status(500).json({ message: 'Error inesperado' });
