@@ -37,6 +37,7 @@ router.post(
 router.get('/', ProjectController.getProjects);
 
 router.param('id', validateProjectExists);
+router.param('projectId', validateProjectExists);
 router.param('id', validateUserPermissions);
 
 router.get('/:id', ProjectController.getProjectById);

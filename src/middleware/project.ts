@@ -50,7 +50,7 @@ export async function validateProjectExists(
 	next: NextFunction,
 ) {
 	try {
-		const { projectId } = req.params;
+		const projectId = req.params?.id || req.params?.projectId;
 
 		if (!Types.ObjectId.isValid(projectId)) {
 			return res.status(400).json(

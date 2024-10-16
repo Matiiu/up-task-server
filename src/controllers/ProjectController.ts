@@ -43,6 +43,7 @@ class ProjectController {
 
 	static getProjectById = async (req: Request, res: Response) => {
 		try {
+			const project = await req.project.populate('tasks');
 			res.json(req.project);
 		} catch (err) {
 			console.log(
