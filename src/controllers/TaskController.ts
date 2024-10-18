@@ -48,7 +48,13 @@ class TaskController {
 					path: 'completedBy.user',
 					select: 'id name email',
 				})
-				.populate({ path: 'notes', populate: { path: 'createdBy' } });
+				.populate({
+					path: 'notes',
+					populate: {
+						path: 'createdBy',
+						select: 'id name email createdAt updatedAt',
+					},
+				});
 			res.json(task);
 		} catch (err) {
 			console.log(
