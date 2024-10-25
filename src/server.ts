@@ -8,6 +8,7 @@ import authRoutes from './routes/AuthRoutes';
 import projectRotes from './routes/ProjectRoutes';
 import teamRoutes from './routes/TeamRoutes';
 import NoteRoutes from './routes/NoteRoutes';
+import ProfileRoutes from './routes/ProfileRoutes';
 
 // Call environment variables
 dotenv.config();
@@ -30,5 +31,6 @@ app.use(`${endpoint}/auth`, authRoutes);
 app.use(`${endpoint}/projects`, projectRotes);
 app.use(`${endpoint}/team`, teamRoutes);
 app.use(`${endpoint}/notes`, NoteRoutes);
+app.use(`${endpoint}/profile`, ProfileRoutes);
 
 export default app;

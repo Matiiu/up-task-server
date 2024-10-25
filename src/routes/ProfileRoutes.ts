@@ -1,12 +1,11 @@
 import { Router } from 'express';
 import { body } from 'express-validator';
-
 import handleInputErrors from '../middleware/validation';
 import { validateProjectExists } from '../middleware/project';
 import { validateTaskExists, taskBelongsToProject } from '../middleware/task';
 import { handleUserAuthentication, validateUser } from '../middleware/auth';
-import NoteController from '../controllers/NoteController';
-import { validateNoteExists, validatePermission } from '../middleware/note';
+import ProfileController from '../controllers/ProfileControlles';
+import { PASSWORD_REGEX } from '../constants/authConstant';
 
 const router: Router = Router();
 
@@ -21,22 +20,34 @@ router.param('taskId', validateTaskExists);
 // Check if the task with the given 'taskId' belongs to the current project before proceeding to the route handler
 router.param('taskId', taskBelongsToProject);
 
-router.post(
-	'/:projectId/task/:taskId',
-	body('content')
-		.notEmpty()
-		.withMessage('El contenido de la nota es requerido'),
+router.put(
+	'/',
+	body('email').isEmail().withMessage('El correo no es valido'),
+	body('name').notEmpty().withMessage('El nombre es requerido'),
 	handleInputErrors,
-	NoteController.create,
+	ProfileController.update,
 );
 
-router.get('/:projectId/task/:taskId/notes', NoteController.getAll);
-
-// Validate that a note with the given 'noteId' exists before proceeding to the route handler
-router.param('noteId', validateNoteExists);
-// Validate if the user has permission to realice the action
-router.param('noteId', validatePermission);
-
-router.delete('/:projectId/task/:taskId/:noteId', NoteController.delete);
+router.post(
+	'/password',
+	body('currentPassword')
+		.notEmpty()
+		.withMessage('La contraseña actual es requerida'),
+	body('newPassword')
+		.isLength({ min: 8 })
+		.withMessage('La contraseña debe tener al menos 8 caracteres')
+		.matches(PASSWORD_REGEX)
+		.withMessage(
+			'La contraseña debe tener al menos una letra mayúscula, una letra minúscula, un número y un carácter especial',
+		),
+	body('passwordConfirmation').custom((value, { req }) => {
+		if (value !== req.body.newPassword) {
+			throw new Error('Las contraseñas no coinciden');
+		}
+		return true;
+	}),
+	handleInputErrors,
+	ProfileController.updatePassword,
+);
 
 export default router;
