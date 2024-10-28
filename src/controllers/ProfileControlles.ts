@@ -69,4 +69,20 @@ export default class ProfileController {
 			res.status(500).json({ message: 'Error inesperado' });
 		}
 	};
+
+	static checkPassword = async (req: Request<{}, {}, TUser>, res: Response) => {
+		const { password } = req.body;
+
+		// Check if the current password is correct
+		const user = await User.findById(req.user.id);
+		const isPasswordValid = await validatePassword(password, user.password);
+
+		if (!isPasswordValid) {
+			return res
+				.status(400)
+				.json({ message: 'La contraseña actual es incorrecta' });
+		}
+
+		res.send('La contraseña es correcta');
+	};
 }

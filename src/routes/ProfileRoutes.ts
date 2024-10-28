@@ -50,4 +50,11 @@ router.post(
 	ProfileController.updatePassword,
 );
 
+router.post(
+	'/check-password',
+	body('password').notEmpty().withMessage('La contraseña actual es requerida'),
+	handleInputErrors,
+	ProfileController.checkPassword,
+);
+
 export default router;
