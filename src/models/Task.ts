@@ -70,6 +70,13 @@ const TaskSchema: Schema = new Schema(
 	{ timestamps: true },
 );
 
+// Middleware for deleting all notes when a task is deleted
+TaskSchema.pre('deleteOne', { document: true }, async function () {
+	const taskId = this?._id;
+	if (!taskId) return;
+	await mongoose.model('Note').deleteMany({ task: taskId });
+});
+
 const Task = mongoose.model<TTask>('Task', TaskSchema);
 
 export default Task;

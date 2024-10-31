@@ -50,6 +50,19 @@ const ProjectSchema: Schema = new Schema(
 	{ timestamps: true },
 );
 
+// Middleware for deleting all tasks when a project is deleted
+ProjectSchema.pre('deleteOne', { document: true }, async function () {
+	const projectId = this?._id;
+	if (!projectId) return;
+
+	const tasks = await mongoose.model('Task').find({ project: projectId });
+	if (Array.isArray(tasks) && tasks.length) {
+		for (const task of tasks) {
+			await task.deleteOne();
+		}
+	}
+});
+
 const Project = mongoose.model<TProject>('Project', ProjectSchema);
 
 export default Project;
