@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "nodemon --exec ts-node src/index.ts",
     "dev:api": "nodemon --exec ts-node src/index.ts --api",
-    "format": "exec prettier . --write"
+    "format": "exec prettier . --write",
+    "build": "tsc",
+    "start": "node ./dist/index.js"
   },
   "keywords": [],
   "author": "",
@@ -19,6 +21,7 @@
     "express": "^4.19.2",
     "express-validator": "^7.0.1",
     "jsonwebtoken": "^9.0.2",
+    "module-alias": "^2.2.3",
     "mongoose": "^8.3.3",
     "mongoose-unique-validator": "^5.0.1",
     "morgan": "^1.10.0",
