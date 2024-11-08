@@ -8,7 +8,7 @@
     "dev:api": "nodemon --exec ts-node src/index.ts --api",
     "format": "exec prettier . --write",
     "build": "tsc",
-    "start": "node ./dist/index.js"
+    "start": "npm run build && node ./dist/index.js"
   },
   "keywords": [],
   "author": "",
